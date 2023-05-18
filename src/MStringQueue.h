@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.9 copyright Comine.com 20160214U2010
+//v1.11 copyright Comine.com 20190829R0103
 #ifndef MStringQueue_h
 #define MStringQueue_h
 
@@ -69,6 +69,8 @@ class MStringQueue
 
 	// Extra Operations
 	bool Sort(void);							// Sort in Alphabetical Order + Will Reset the read
+	bool IsMember(const char *str);				// Check if queue contains member
+	bool Reverse(void);							// Reverse the queue
 	};
 
 #endif // MStringQueue_h

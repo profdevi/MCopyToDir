@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.0 copyright Comine.com 20150810M0909
+//v2.1 copyright Comine.com 20210420T0143
 #ifndef MIWRITER_H
 #define MIWRITER_H
 
@@ -57,6 +57,8 @@ struct MIWriter
 	bool WriteChars(const char *string);	// Write all chars of except zero
 	bool WriteChars(const char *str1,const char *str2,const char *str3=NULL
 			,const char *str4=NULL,const char *str5=NULL,const char *str6=NULL);
+	bool Write(uint16_t value);
+	bool Write(uint32_t value);
 	};
 
 

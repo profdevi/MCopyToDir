@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v3.2 copyright Comine.com 20170409U0957
+//v3.4 copyright Comine.com 20190903T1840
 #include "MStdLib.h"
 #include "TVector.h"
 #include "MIReader.h"
@@ -275,6 +275,22 @@ bool MString::operator=(MString &src)
 	}
 
 
+////////////////////////////////////////////////
+bool MString::operator==(MString& other)
+	{
+	if(Compare(other)==0) { return true; }
+	return false;
+	}
+
+
+////////////////////////////////////////////////
+bool MString::operator!=(MString& other)
+	{
+	if (Compare(other) != 0) { return true; }
+	return false;
+	}
+
+
 ///////////////////////////////////////////////
 MString MString::operator +(const char *str) // return an temp object
 	{
@@ -343,14 +359,14 @@ char &MString::operator[](int index)
 
 
 ///////////////////////////////////////////////
-const char *MString::Get(void)
+const char *MString::Get(void) const
 	{
 	return mString.Get();
 	}
 
 
 ////////////////////////////////////////////////
-const char *MString::GetEnd(int count)
+const char *MString::GetEnd(int count) const
 	{
 	if(count<0) { return "";  }
 	if(count>mLength) { return "";  }
@@ -1560,6 +1576,21 @@ bool MStringWide::operator=(const wchar_t *str)
 ///////////////////////////////////////////////
 bool MStringWide::operator=(MStringWide &src)
 	{  return Create(src.mString.Get());  }
+
+
+////////////////////////////////////////////////
+bool MStringWide::operator==(MStringWide& other)
+	{
+	if (Compare(other) == 0) { return true; }
+	return false;
+	}
+
+////////////////////////////////////////////////
+bool MStringWide::operator!=(MStringWide& other)
+	{
+	if (Compare(other) != 0) { return true; }
+	return false;
+	}
 
 
 ///////////////////////////////////////////////

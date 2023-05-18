@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.18 copyright Comine.com 20150816U2133
+//v1.19 copyright Comine.com 20180626T1146
 #include "MStdLib.h"
 #include "MStringList.h"
 
@@ -346,6 +346,20 @@ bool MStringList::Swap(MStringList &list)
 	mCount=list.mCount;
 	list.mCount=tmpcount;
 
+	return true;
+	}
+
+
+////////////////////////////////////////////////////////////////////////
+bool MStringList::Print(void)
+	{
+	int count=1;		
+	for(GNode *p=mFirstNode;p!=NULL;p=p->Next)
+		{
+		MStdPrintf("\t%2d : %s\n",count,p->Data);
+		count=count+1;
+		}
+	
 	return true;
 	}
 

@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v3.2 copyright Comine.com 20170409U0957
+//v3.4 copyright Comine.com 20190903T1840
 #ifndef MString_h
 #define MString_h
 
@@ -73,12 +73,14 @@ class MString
 	bool operator=(const char *str);
 	bool operator=(const wchar_t *str);
 	bool operator=(MString &src);
+	bool operator==(MString &other);			// Check if two strings are the same
+	bool operator!=(MString& other);			// Check if two strings are the same
 	MString operator +(const char *str);		// return a temp object
 	MString operator +(MString &ref);			// return a temp object
 	MString operator +(MStringWide &ref);		// return a temp object
 	char &operator[](int index);
-	const char *Get(void);
-	const char *GetEnd(int count);				// Get End String
+	const char *Get(void) const;
+	const char *GetEnd(int count) const;		// Get End String
 	bool ToUpper(void);
 	bool ToLower(void);
 	bool Trim(void);							// Trim Spaces
@@ -191,6 +193,8 @@ class MStringWide
 	bool operator=(const char *str);
 	bool operator=(const wchar_t *str);
 	bool operator=(MStringWide &src);
+	bool operator==(MStringWide& other);			// Check if two strings are the same
+	bool operator!=(MStringWide& other);			// Check if two strings are the same
 	wchar_t &operator[](int index);
 	const wchar_t *Get(void);
 	const wchar_t *GetEnd(int count);			// Get End String

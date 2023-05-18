@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.0 copyright Comine.com 20150810M0910
+//v2.2 copyright Comine.com 20210420T0143
 #include "MStdLib.h"
 #include "MIReader.h"
 
@@ -225,6 +225,30 @@ bool MIReader::ReadLine(char *string,int bufsize)	// Reads whole line till '\n'
 
 	// buffer full
 	string[bufsize-1]=0;
+	return true;
+	}
+
+
+/////////////////////////////////////////////////////
+bool MIReader::Read(uint16_t& value)
+	{
+	if(this->OnRead(&value,sizeof(value) )==false)
+		{
+		return false;
+		}
+
+	return true;	
+	}
+
+
+/////////////////////////////////////////////////////
+bool MIReader::Read(uint32_t& value)
+	{
+	if(this->OnRead(&value,sizeof(value) )==false)
+		{
+		return false;
+		}
+
 	return true;
 	}
 

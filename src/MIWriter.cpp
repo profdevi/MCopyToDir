@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.0 copyright Comine.com 20150810M0909
+//v2.1 copyright Comine.com 20210420T0143
 #include "MStdLib.h"
 #include "MIWriter.h"
 
@@ -203,5 +203,30 @@ bool MIWriter::WriteChars(const char *str1,const char *str2,const char *str3
 
 	return true;
 	}
+
+
+/////////////////////////////////////////////////////
+bool MIWriter::Write(uint16_t value)
+	{
+	if(this->OnWrite(&value,sizeof(value))==false)
+		{
+		return false;
+		}
+
+	return true;
+	}
+
+
+/////////////////////////////////////////////////////
+bool MIWriter::Write(uint32_t value)
+	{
+	if(this->OnWrite(&value,sizeof(value))==false)
+		{
+		return false;
+		}
+
+	return true;
+	}
+
 
 

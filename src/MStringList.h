@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.18 copyright Comine.com 20150816U2133
+//v1.19 copyright Comine.com 20180626T1146
 #ifndef MStringList_h
 #define MStringList_h
 
@@ -63,6 +63,7 @@ class MStringList
 	int GetCount(void);					// Get Count of strings
 	bool Remove(const char *string);	// Remove the string from list
 	bool Swap(MStringList &list);		// Swap Two Lists
+	bool Print(void);					// Print out strings
 	};
 
 #endif // MStringList_h

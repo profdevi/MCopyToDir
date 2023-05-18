@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,13 +30,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.14 copyright Comine.com 20170309R0657
+//v2.26 copyright Comine.com 20230512R0915
 #ifndef MStdLib_h
 #define MStdLib_h
 
 /* 
 Note Visual Studio
+	
 	MSVC++ 14.0 _MSC_VER == 1900 (Visual Studio 2015)
 	MSVC++ 12.0 _MSC_VER == 1800 (Visual Studio 2013)
 	MSVC++ 11.0 _MSC_VER == 1700 (Visual Studio 2012)
@@ -147,6 +148,7 @@ Note Visual Studio
 #include <time.h>
 #include <math.h>
 #include <new>
+#include <stdint.h>
 
 #elif (defined(MSTDLIB_OS_WINDOWSRT) )
 #include <stdio.h>
@@ -156,24 +158,28 @@ Note Visual Studio
 #include <math.h>
 #include <new>
 #include <stdarg.h>
+#include <stdint.h>
 
 #elif (defined(MSTDLIB_OS_WINDOWSOLD) || defined(MSTDLIB_OS_MINGW) )
 #include <time.h>
 #include <math.h>
 #include <wchar.h>
 #include <new>
+#include <stdint.h>
 
 #elif ( defined(MSTDLIB_OS_LINUX) || defined(MSTDLIB_OS_OTHER) || defined(MSTDLIB_OS_MACOS) )
 #include <time.h>
 #include <math.h>
 #include <wchar.h>
 #include <new>
+#include <stdint.h>
 
 #elif defined(MSTDLIB_OS_IPHONE)
 #include <time.h>
 #include <math.h>
 #include <wchar.h>
 #include <new>
+#include <stdint.h>
 
 #endif // MSTDLIB_OS_WINDOWS
 
@@ -206,6 +212,162 @@ bool MStdPrintInfo(void);		// Print out information
 void MStdAssertInternal(bool flag,const char *exp,const char *filename,int lineno);
 void MStdError(const char *info,const char *filename,int lineno);
 void MStdBreak(void);									// Break Point in Code
+
+///////////////////////////////////////////////////////////
+// MStdArray Template
+///////////////////////////////////////////////////////////
+template <typename DataType>
+class MStdArray
+	{
+	DataType *mArray;
+	int mArrayLength;
+
+	//////////////////////////////////////////////////////
+	public:
+	MStdArray(void)
+		{
+		mArray=0;
+		mArrayLength=0;
+		}
+
+	//////////////////////////////////////////////////////
+	MStdArray(int length)
+		{
+		mArray = 0;
+		mArrayLength = 0;
+
+		if(Create(length)==false)
+			{
+			return;
+			}
+		}
+
+
+	//////////////////////////////////////////////////////
+	MStdArray(MStdArray &refobj,int newlength=0)
+		{
+		mArray = 0;
+		mArrayLength = 0;
+
+		if(Create(refobj,newlength)==false)
+			{
+			return;
+			}
+		}
+
+
+	//////////////////////////////////////////////////////
+	~MStdArray(void)
+		{
+		Destroy();
+		}
+
+	////////////////////////////////////////////////////////
+	bool Create(int length)
+		{
+		Destroy();
+
+		mArray=new(std::nothrow) DataType[length];
+		if(mArray==0)
+			{
+			return false;
+			}
+
+		mArrayLength=length;
+		return true;
+		}
+
+
+	////////////////////////////////////////////////////////
+	bool Create(MStdArray &refobj,int newlength=0)
+		{
+		MStdAssert(refobj.mArrayLength>0);
+
+		// If Just Copy Constructed from original, keep same size
+		if(newlength<=0) { newlength=refobj.mArrayLength; }
+
+		// Implemenation should not modify members when refobj is current object.
+		DataType *newarray=new(std::nothrow) DataType[newlength];
+		if(newarray==0)
+			{
+			return false;
+			}
+
+		int maxcopy=newlength;
+		if(refobj.mArrayLength<maxcopy) { maxcopy=refobj.mArrayLength;  }
+		for(int i=0;i<maxcopy;++i)
+			{
+			// Copy Construct new elements
+			newarray[i] = refobj.mArray[i];
+			}
+
+		Destroy();
+		mArray=newarray;
+		mArrayLength=newlength;
+
+		return true;
+		}
+
+
+	////////////////////////////////////////////////////////
+	bool Destroy(void)
+		{
+		if(mArray!=0)
+			{
+			delete []mArray;
+			}
+
+		mArray=0;
+		mArrayLength=0;
+		return true;		
+		}
+
+
+	////////////////////////////////////////////////////
+	operator DataType *(void)
+		{
+		return mArray;
+		}
+
+	///////////////////////////////////////////////////
+	DataType *Get(void) const
+		{
+		return mArray;
+		}
+
+	///////////////////////////////////////////////////
+	DataType & operator[](int index)
+		{
+		MStdAssert(index>=0 && index<mArrayLength);
+		return mArray[index];
+		}
+
+	//////////////////////////////////////////////////
+	int GetLength(void) const
+		{
+		return mArrayLength;
+		}
+
+	/////////////////////////////////////////////////
+	bool Swap(MStdArray &refobj)
+		{
+		int tmplength=refobj.mArrayLength;
+		refobj.mArrayLength=mArrayLength;
+		mArrayLength=tmplength;
+
+		DataType *tmparray=refobj.mArray;
+		refobj.mArray=mArray;
+		mArray=tmparray;
+
+		return true;
+		}
+
+	//////////////////////////////////////////////////
+	bool operator=(MStdArray &refobj)
+		{
+		return Create(refobj);
+		}
+	};
 
 //************************************************
 //*  Limits
@@ -253,6 +415,16 @@ const char *MStdStr(int value);							// Build a temp string
 const char *MStdStr(float value);						// Build a temp string
 const char *MStdStr(double value);						// Build a temp string
 
+bool MStdStr(bool value,char strout[],int stroutlen);	// Convert type to string		
+bool MStdStr(int value,char strout[],int stroutlen);	// Convert type to string		
+bool MStdStr(float value,char strout[],int stroutlen);	// Convert type to string		
+bool MStdStr(double value,char strout[],int stroutlen);	// Convert type to string		
+
+// Covert numbers to human readable numbers
+bool MStdToHumanBinary(double value, double &newvalue,const char*& suffix);		// Write in Human readable form k/M/G/T/P/E/Z/Y
+bool MStdToHumanMetric(double value, double& newvalue, const char*& suffix);	// Write in Human readable form u/m k/M/G/T/P/E/Z/Y
+
+
 /////////////////////////////////////////////////
 // Wide String Operations
 int MStdSPrintf(wchar_t *target,int targetsize,const wchar_t *format,...);	// String Formated Printf
@@ -260,6 +432,12 @@ const wchar_t *MStdStrWide(bool value);					// Build a temp string
 const wchar_t *MStdStrWide(int value);					// Build a temp string
 const wchar_t *MStdStrWide(float value);				// Build a temp string
 const wchar_t *MStdStrWide(double value);				// Build a temp string
+
+bool MStdStrWide(bool value,wchar_t strout[],int stroutlen);	// Convert type to string		
+bool MStdStrWide(int value,wchar_t strout[],int stroutlen);		// Convert type to string		
+bool MStdStrWide(float value,wchar_t strout[],int stroutlen);	// Convert type to string		
+bool MStdStrWide(double value,wchar_t strout[],int stroutlen);	// Convert type to string		
+
 
 //////////////////////////////////////////////////
 bool MStdStrIsMember(char ch,const char *str);			// Check if char is in string
@@ -270,6 +448,8 @@ bool MStdStrRemoveChars(wchar_t *modifystr,const wchar_t *removechars);
 //////////////////////////////////////////////////
 // Extra Functions
 bool MStdWindowOutput(const char *title,const char *info);	// Dialog Box if availible
+bool MStdProgressBar(int i,int max,const char *prefix="");	// Display Progress Bar
+bool MStdProgressBarClean(void);						// Remove the Progress Bar
 bool MStdSleep(int ms);									// Sleep for some ms
 bool MStdExit(int value);								// Exit application
 
@@ -277,11 +457,6 @@ bool MStdExit(int value);								// Exit application
 // Char Functions
 bool MStdIsNan(double val);								// Check if float is Not A Number
 bool MStdIsFinite(double val);							// Check if number is finite
-
-/////////////////////////////////////////////////
-bool MStdGetEnvVar(const char *var,char *buf,int buflen);		// Get Environment variable
-bool MStdGetUserHome(char *buf,int buflen);				// Return the home directory of user
-
 
 //////////////////////////////////////////////////
 // Memory Functions
@@ -334,9 +509,6 @@ int MStdGetMidIndex(const double *data,int datacount);	// Get the first index of
 void MStdSRand(void);									// Seed based on time
 void MStdSRand(int seed);								// Seed
 int MStdRand(int range=32767);							// Weak Random Number
-
-/////////////////////////////////////////////////
-bool MStdGetUUID(char buf[],int buflen);
 
 //*******************************************************************
 //** Template Functions
@@ -590,6 +762,7 @@ bool MStdCompare(const Type &val1,const Type &val2,const Type &error)
 	return false;
 	};
 
+
 //////////////////////////////////////////////////
 // Compare Two Numbers
 template<typename Type>
@@ -614,10 +787,12 @@ unsigned int MStdGetTimeOfDay(void);
 // Log File
 bool MStdLog(const char *logentry,const char *file,int lineno);
 
+
 //////////////////////////////////////////////////
 // Power Function
 inline double MStdPower(const double &base,const double &exp)
 	{  return pow(base,exp);  }
+
 
 //////////////////////////////////////////////////
 // sqrt function
@@ -629,18 +804,24 @@ inline double MStdSqrt(const double &val)
 // Some Well Known Constants
 extern const double MStdLibConstPi;
 
+
 //////////////////////////////////////////////////
 // Platform Specific Information
-bool MStdGetMachineName(char *buffer,int bufferlen);
+bool MStdGetMachineName(char *buffer,int bufferlen);			// Get Machine Name
+bool MStdGetMachineName(MStdArray<char> &name);					// Get Machine Names
+bool MStdGetIsLittleEndian(void);								// Check if Machine is Little Endian
+unsigned int MStdGetProcessID(void);							// Get Current Process ID
 bool MStdGetOSRoot(char *buffer,int bufferlen);					// returns: "c:/" or "/" based on os
+bool MStdGetOSRoot(MStdArray<char> &root);						// returns: "c:/" or "/" based on os
 bool MStdGetOSPathSeperator(char *buffer,int bufferlen);		// returns: ";" or ":"
+bool MStdGetOSPathSeperator(MStdArray<char> &sep);				// returns: ";" or ":"
 bool MStdIsUnix(void);											//=true if UNIX like OS (Linux,...)
 bool MStdIsWindows(void);										//=true if on MS Windows OS
 bool MStdDirGet(char *buffer,int bufferlen);					// Gets the current working directory "C:/../". "/" is always in the directory
 bool MStdDirSet(const char *dirpath);							// Sets the current directory
 bool MStdDirCreate(const char *dirpath);						// Create a new directory
 bool MStdDirDestroy(const char *dirpath,bool generror=false);	// Remove a directory
-bool MStdGetUserName(char buf[],int buflength);					// Get the user name of current user
+bool MStdDirExists(const char *dirpath);						// = true if Directory exists, false otherwise
 
 
 //////////////////////////////////////////////////
@@ -1509,158 +1690,56 @@ class MStdUniquePtr
 	};
 
 
-///////////////////////////////////////////////////////////
-// Simple Value Type Array
-template <typename DataType>
-class MStdArray
+
+////////////////////////////////////////////////////////
+// Return the Left Portion of a string
+template<typename Type>
+bool MStdStrLeft(const Type *str,int length,MStdArray<Type> &retstr)
 	{
-	DataType *mArray;
-	int mArrayLength;
-
-	//////////////////////////////////////////////////////
-	public:
-	MStdArray(void)
+	MStdAssert(length>=0);
+	if(retstr.Create(length+1)==false)
 		{
-		mArray=0;
-		mArrayLength=0;
+		return false;
 		}
 
-	//////////////////////////////////////////////////////
-	MStdArray(int length)
-		{
-		mArray = 0;
-		mArrayLength = 0;
+	retstr[length]=0;
 
-		if(Create(length)==false)
-			{
-			return;
-			}
+	for(int i=0;i<length;++i)
+		{
+		const Type val=str[i];
+		retstr[i]=val;
+		if(val==0) { break; }
 		}
 
+	return true;
+	};
 
-	//////////////////////////////////////////////////////
-	MStdArray(MStdArray &refobj,int newlength=0)
+
+////////////////////////////////////////////////////////
+// Return Right portion of a string
+template<typename Type>
+bool MStdStrRight(const Type *str,int length,MStdArray<Type> &retstr)
+	{
+	MStdAssert(length>=0);
+	const int strlength=MStdStrLen(str);
+	if(length>strlength) { length=strlength; }
+	
+	if(retstr.Create(length+1)==false)
 		{
-		mArray = 0;
-		mArrayLength = 0;
-
-		if(Create(refobj,newlength)==false)
-			{
-			return;
-			}
+		return false;
 		}
 
+	retstr[length]=0;
+	
+	const Type *newstrpos=str+(strlength-length);
 
-	//////////////////////////////////////////////////////
-	~MStdArray(void)
+	for(int i=0;i<length;++i)
 		{
-		Destroy();
+		const Type val=newstrpos[i];
+		retstr[i]=val;
 		}
 
-	////////////////////////////////////////////////////////
-	bool Create(int length)
-		{
-		Destroy();
-
-		mArray=new(std::nothrow) DataType[length];
-		if(mArray==0)
-			{
-			return false;
-			}
-
-		mArrayLength=length;
-		return true;
-		}
-
-
-	////////////////////////////////////////////////////////
-	bool Create(MStdArray &refobj,int newlength=0)
-		{
-		MStdAssert(refobj.mArrayLength>0);
-
-		// If Just Copy Constructed from original, keep same size
-		if(newlength<=0) { newlength=refobj.mArrayLength; }
-
-		// Implemenation should not modify members when refobj is current object.
-		DataType *newarray=new(std::nothrow) DataType[newlength];
-		if(newarray==0)
-			{
-			return false;
-			}
-
-		const int maxcopy=MStdGetMin(newlength,refobj.mArrayLength);
-		for(int i=0;i<maxcopy;++i)
-			{
-			// Copy Construct new elements
-			newarray[i] = refobj.mArray[i];
-			}
-
-		Destroy();
-		mArray=newarray;
-		mArrayLength=newlength;
-
-		return true;
-		}
-
-
-	////////////////////////////////////////////////////////
-	bool Destroy(void)
-		{
-		if(mArray!=0)
-			{
-			delete []mArray;
-			}
-
-		mArray=0;
-		mArrayLength=0;
-		return true;		
-		}
-
-
-	////////////////////////////////////////////////////
-	operator DataType *(void)
-		{
-		return mArray;
-		}
-
-	///////////////////////////////////////////////////
-	DataType *Get(void) const
-		{
-		return mArray;
-		}
-
-	///////////////////////////////////////////////////
-	DataType & operator[](int index)
-		{
-		MStdAssert(index>=0 && index<mArrayLength);
-		return mArray[index];
-		}
-
-	//////////////////////////////////////////////////
-	int GetLength(void) const
-		{
-		return mArrayLength;
-		}
-
-	/////////////////////////////////////////////////
-	bool Swap(MStdArray &refobj)
-		{
-		int tmplength=refobj.mArrayLength;
-		refobj.mArrayLength=mArrayLength;
-		mArrayLength=tmplength;
-
-		DataType *tmparray=refobj.mArray;
-		refobj.mArray=mArray;
-		mArray=tmparray;
-
-		return true;
-		}
-
-	//////////////////////////////////////////////////
-	bool operator=(MStdArray &refobj)
-		{
-		return Create(refobj);
-		}
+	return true;
 	};
 
 
@@ -1673,11 +1752,23 @@ bool MStdStrCpy(MStdArray<char> &strout,const wchar_t *str);		// Convert wide st
 
 ////////////////////////////////////////////////
 // Path Operations
-bool MStdPathSetSlash(char *path);										// Set slashes to forward slash
-bool MStdPathGetAbsolute(const char *path,MStdArray<char> &abspath);	// Get Absolute path
-bool MStdDirGet(MStdArray<char> &path);									// Get Current working directory
-bool MStdFileReadText(const char *filename,MStdArray<char> &data);		// Read from file into buffer
+bool MStdPathSetSlash(char *path);											// Set slashes to forward slash
+bool MStdPathGetAbsolute(const char *path,MStdArray<char> &abspath);		// Get Absolute path
+const char *MStdPathGetExtension(const char* path);							// Get File name extension
+const char* MStdPathGetFileName(const char* path);							// Get File name extension
+const char* MStdPathDiff(const char* largerabspath,const char *smallerabspath);		// Remove the c:/one/two - c:/one = /two
+bool MStdDirGet(MStdArray<char> &path);										// Get Current working directory
+bool MStdFileReadText(const char *filename,MStdArray<char> &data);			// Read from file into buffer
+bool MStdFileReadBinary(const char* filename, MStdArray<char> &bindata);	// Read from binary file into buffer
+bool MStdFileWrite(const char *filename,const char *buffer,int elementsize,int elementcount);
 
+/////////////////////////////////////////////////
+bool MStdGetEnvVar(const char* var, char* buf, int buflen);		// Get Environment variable
+bool MStdGetEnvVar(const char* var, MStdArray<char>& value);	// Get Environment variable
+bool MStdGetUserHome(char* buf, int buflen);					// Return the home directory of user
+bool MStdGetUserHome(MStdArray<char> &value);					// Return the home directory of user
+bool MStdGetUserName(char buf[], int buflength);				// Get the user name of current user
+bool MStdGetUserName(MStdArray<char> &username);				// Get the user name of current user
 
 #endif // MStdLib_h
 

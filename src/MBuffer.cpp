@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.1 copyright Comine.com 20150912S0722
+//v2.2 copyright Comine.com 20180217S0941
 #include "MStdLib.h"
 #include "MString.h"
 #include "MBuffer.h"
@@ -360,7 +360,6 @@ bool MBuffer::Compare(const char *string)
 //////////////////////////////////////////////
 bool MBuffer::Compare(const wchar_t *string)
 	{
-
 	if(MString::Compare((wchar_t*)mBuffer,string)==0)
 		{ return true; }
 

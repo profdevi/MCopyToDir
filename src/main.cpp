@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,13 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.2 copyright Comine.com 20160822M0802
+//v1.3 copyright Comine.com 20230518R0831
 #include "MStdLib.h"
 #include "MCommandArg.h"
 #include "MString.h"
 #include "MBuffer.h"
-#include "MFileOps.h"
 #include "MFileSet.h"
 #include "MPathNameList.h"
 
@@ -44,7 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //* Module Elements
 //******************************************************
 static const char *GApplicationName="MCopyToDir";	// Used in Help
-static const char *GApplicationVersion="1.2";	// Used in Help
+static const char *GApplicationVersion="1.3";	// Used in Help
 
 ////////////////////////////////////////////////////
 static void GDisplayHelp(void);
@@ -68,9 +67,8 @@ int main(int argn,const char *argv[])
 		{  verbose=true;  }
 
 	// Get target dir Target
-	MString targetdir;
-	MFileOps fileops(true);
-	if(fileops.GetAbsolutePath(args.GetArg(1),targetdir)==false)
+	MStdArray<char> targetdir;
+	if(MStdPathGetAbsolute(args.GetArg(1),targetdir)==false)
 		{
 		MStdPrintf("**Unable to get Path to directory: %s\n",args.GetArg(1) );
 		return 1;
@@ -89,8 +87,16 @@ int main(int argn,const char *argv[])
 		const char *dirname;
 		dirname=args.GetArg(i);
 
+		// Get Absolute Path to source directory
+		MStdArray<char> absdirname;
+		if(MStdPathGetAbsolute(dirname,absdirname)==false)
+			{
+			MStdPrintf("**Unable to get abs path for %s\n",dirname);
+			return 1;
+			}
+
 		bool retflag;
-		retflag=fileset.AddFiles(dirname,pattern);
+		retflag=fileset.AddFiles(absdirname.Get(),pattern);
 
 		if(verbose==true)
 			{
@@ -150,7 +156,7 @@ int main(int argn,const char *argv[])
 			MStdPrintf("%-50s : Copied\n",filename);
 			}
 
-		fileops.Copy(filename,fulltargetpath.GetBuffer());
+		MStdFileCopy(filename,fulltargetpath.GetBuffer());
 		}
 	
 	return 0;

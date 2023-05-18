@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.9 copyright Comine.com 20160214U2010
+//v1.11 copyright Comine.com 20190829R0103
+#include <new>
 #include "MStdLib.h"
 #include "MStringQueue.h"
 
@@ -71,7 +72,7 @@ static bool GReleaseList(GNode *list)
 static GNode *GCreateNode(const char *string)
 	{
 	GNode *newnode;
-	newnode=new GNode;
+	newnode=new(std::nothrow) GNode;
 	if(newnode==NULL)
 		{
 		return NULL;
@@ -85,12 +86,13 @@ static GNode *GCreateNode(const char *string)
 
 	// Allocate space for string
 	const int stringlength=MStdStrLen(string)+1;
-	newnode->String=new char[stringlength];
+	newnode->String=new(std::nothrow) char[stringlength];
 	if(newnode->String==NULL)
 		{
 		delete newnode;
 		return NULL;
 		}
+
 
 	// assign new string
 	MStdStrCpy(newnode->String,string);
@@ -313,6 +315,43 @@ bool MStringQueue::Sort(void)
 	
 	// reset the current read positions
 	ReadReset();
+	return true;
+	}
+
+
+////////////////////////////////////////////////////
+bool MStringQueue::IsMember(const char* str)
+	{
+	for (GNode* p = mFirstNode->Next; p != NULL; p = p->Next)
+		{
+		if(MStdStrCmp(p->String,str)==0) { return true; }
+		}
+	
+	return false;
+	}
+
+
+//////////////////////////////////////////////////
+bool MStringQueue::Reverse(void)
+	{
+	if(mLastNode==mFirstNode)
+		{
+		MStdAssert(mQueueSize==0);
+		return true;
+		}
+
+	GNode* newlist = NULL;
+	GNode* next;
+	for (GNode* p = mFirstNode->Next; p != NULL; p = next)
+		{
+		next = p->Next;
+		p->Next = newlist;
+		newlist = p;
+		}
+
+	mLastNode = mFirstNode->Next;
+	mFirstNode->Next= newlist;
+	
 	return true;
 	}
 

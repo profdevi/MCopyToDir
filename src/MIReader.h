@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,10 +30,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v2.0 copyright Comine.com 20150810M0910
+//v2.2 copyright Comine.com 20210420T0143
 #ifndef MIREADER_H
 #define MIREADER_H
+
+////////////////////////////////////////////
+#include "MStdLib.h"
 
 ////////////////////////////////////////////
 struct MIReader
@@ -51,7 +54,9 @@ struct MIReader
 	bool Read(float &value);
 	bool Read(double &value);
 	bool Read(void *block,int size);
-	bool ReadLine(char *string,int bufsize);			// Reads whole line till '\n'
+	bool ReadLine(char *string,int bufsize);	 		// Reads whole line till '\n'
+	bool Read(uint16_t &value);
+	bool Read(uint32_t &value);
 	};
 
 

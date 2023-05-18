@@ -1,5 +1,6 @@
 /*
-Copyright (C) 2011-2014, Comine.com ( profdevi@ymail.com )
+
+Copyright (C) 2011-2022, Comine.com ( comine.com@gmail.com )
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-
-//v1.49 copyright Comine.com 20170406R1314
+//v1.50 copyright Comine.com 20190829R1212
 #include "MStdLib.h"
 
 //////////////////////////////////////////////
@@ -124,6 +124,7 @@ MFileOps::MFileOps(void)
 ////////////////////////////////////////////////
 MFileOps::MFileOps(bool autocreate)
 	{
+	ClearObject();
 	if(autocreate==true && Create()==false)
 		{
 		return;
@@ -1034,7 +1035,7 @@ bool MFileOps::IsUnixTextFile(const char *filename)		// Check if unix text file
 
 	// Start reading file
 	MStdFileHandle file=MStdFileOpen(filename,"rb");
-	if(file==false)
+	if(file==0)
 		{
 		return false;
 		}
@@ -1067,7 +1068,7 @@ bool MFileOps::IsDosTextFile(const char *filename)					// Check of dos text file
 
 	// Start reading file
 	MStdFileHandle file=MStdFileOpen(filename,"rb");
-	if(file==false)
+	if(file==0)
 		{
 		return false;
 		}
@@ -1288,17 +1289,16 @@ bool MFileOps::SetReadOnly(const char *filename,bool val)			// Set File name
 		return false;
 		}
 
-
 	mode_t newmode;
 	newmode=st.st_mode;
 	
 	if(val==true)
 		{
-		newmode = ( newmode & (~S_IRWXU) );
+		newmode = ( newmode & (~(S_IWUSR|S_IWGRP|S_IWOTH) ) );
 		}
 	else
 		{
-		newmode = ( newmode | S_IRWXU );
+		newmode = ( newmode | (S_IWUSR | S_IWGRP | S_IWOTH));
 		}
 
 	
@@ -2003,7 +2003,10 @@ bool MFileOps::PrintFile(const char *filename)
 
 	char ch;
 	while(fin.Read(ch)==true)
-		{  MStdPrintf("%c",ch);  }
+		{  
+		if(ch=='\r') { continue; }
+		MStdPrintf("%c",ch);
+		}
 	
 	fin.Destroy();
 	return true;
